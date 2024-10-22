@@ -7,9 +7,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const result = await scrapeWebsite('https:example.com');
+  const result = await scrapeWebsite(process.env.SCRAPER_URL || '');
 
-//   console.log('result', result);
+  console.log('result', result);
 
   res.status(200).json({result });
 }
@@ -23,11 +23,12 @@ async function scrapeWebsite(url: string) {
     const $ = load(data);
 
     // Extract data (example: extract all the titles from a webpage)
-    const links: { text: string, href: string }[] = [];
+    const links: { text?: string, href?: string, img?: string }[] = [];
     $('a').each((index, element) => {
       const text = $(element).text();
       const href = $(element).attr('href') || '';
-      links.push({ text, href });
+      const img = $(element).find('img').attr('src') || '';
+      links.push({ text, href, img });
     });
 
     // Output the extracted data
